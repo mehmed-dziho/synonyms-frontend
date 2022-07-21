@@ -16,12 +16,13 @@ export class WordsApi {
         });
     }
 
-    static addWord(word: string) {
+    static addWord(word: string, groupId?: string) {
         return API.apiCall<Word>({
             url: API.words,
             method: ApiMethod.POST,
             data: {
-                word
+                word,
+                groupId
             }
         });
     }

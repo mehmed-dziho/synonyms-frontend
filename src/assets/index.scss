@@ -20,4 +20,33 @@ html {
     padding: 1rem;
     max-width: $appWidth;
     width: 100%;
+
+    .confirm-synonym-btn {
+
+        &:hover {
+            color: $accentColor;
+        }
+    }
+
+    .cancel-synonym-btn {
+
+        &:hover {
+            color: $red;
+        }
+    }
+}
+
+.select-field__control {
+    background: transparent;
+    min-height: unset;
+    outline: none;
+
+    &--is-focused {
+        border-color: $accentColor !important;
+        box-shadow: 0 0 0 1px $accentColor !important;
+    }
+
+    .select-field__indicator {
+        //color: red;
+    }
 }

@@ -1,3 +1,5 @@
+import { SwalUtils } from "../utils/swal_utils";
+
 export enum ApiMethod {
     GET = "GET",
     POST = "POST",
@@ -19,10 +21,19 @@ export interface DefaultApiCallParams {
     body?: ReadableStream<Uint8Array> | string | null,
 }
 
+
 export class API {
 
     static endpoint = process.env.REACT_APP_ENDPOINT ?? "http://localhost:4000";
     static words = API.endpoint + "/words";
+
+    static handleErrors(response: Response): Response {
+        if (response.ok || response.status === 204) {
+            return response;
+        } else {
+            throw response;
+        }
+    }
 
     static apiCall<T>(params: ApiCallParams = {
         url: "",
@@ -46,12 +57,13 @@ export class API {
         }
 
         return fetch(params.url, finalParams)
+            .then(this.handleErrors)
             .then(r => r.json())
             .catch(async ex => {
                 if (ex.json) {
-                    const message = await ex.json();
+                    const err = await ex.json();
 
-                    console.log(message);
+                    SwalUtils.showErrorSwalToast(err?.message ?? err);
                 }
                 return null;
             });
