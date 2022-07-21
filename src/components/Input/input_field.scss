@@ -1,0 +1,165 @@
+@import "src/assets/vars";
+
+.input-field {
+
+    .input-label {
+        display: flex;
+        width: 100%;
+        font-size: 0.8125rem;
+        margin-bottom: 0.375rem;
+        margin-top: 0.5rem;
+        padding-left: 0.875rem;
+        transition: all 200ms ease-in-out;
+        line-height: 1.125rem;
+
+        .required-character {
+            margin-left: 0.3125rem;
+            color: $red;
+        }
+
+        &.error {
+            color: $red;
+        }
+    }
+
+    .input-container {
+        font-weight: 400;
+        border: 1px solid $gray;
+        border-radius: 4px;
+        transition: all 200ms ease-in-out;
+        background: transparent;
+
+        .inner {
+            display: flex;
+            width: 100%;
+            transition: all 200ms ease-in-out;
+
+            input {
+                flex: 1;
+                width: 100%;
+                border: none;
+                font-size: 0.9375rem;
+                color: white;
+                font-weight: 400;
+                padding: 0 0.875rem 0.8125rem 0.875rem;
+                box-sizing: border-box;
+                transition: all 200ms ease-in-out;
+                outline: none;
+                background: transparent;
+                line-height: 1.25rem;
+
+                &::placeholder {
+                    color: $gray;
+                    opacity: 0.3;
+                }
+            }
+
+            .cleave-input {
+                &::placeholder {
+                    color: $gray;
+                    opacity: 0.3;
+                }
+            }
+
+            input:-webkit-autofill,
+            input:-webkit-autofill:hover,
+            input:-webkit-autofill:focus,
+            input:-webkit-autofill:active {
+                -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+                -webkit-text-fill-color: white !important;
+                transition-delay: 100000s;
+            }
+        }
+    }
+
+    &.filled {
+        .input-container {
+            .input-label {
+                opacity: 0.6;
+            }
+
+            .inner {
+                input {
+                    color: $gray;
+                }
+            }
+        }
+    }
+
+    &:hover {
+        .input-container {
+            border-color: $accentColor;
+
+            .inner {
+                input {
+                    color: white;
+                }
+            }
+        }
+    }
+
+    &.focused {
+        .input-container {
+            .input-label {
+                opacity: 0.6;
+            }
+
+            .inner {
+                input {
+                    color: white;
+                }
+            }
+
+            border-color: $accentColor;
+        }
+    }
+
+    &.readonly {
+        .input-container {
+            border: 1px solid transparent;
+
+            &:hover {
+                border: 1px solid transparent;
+            }
+
+            .input-label {
+                color: $accentColor;
+                opacity: 0.8;
+            }
+
+            .inner {
+                input {
+                    pointer-events: none;
+                    color: $gray;
+                }
+
+                .icon-container {
+                    border-color: transparent;
+                }
+            }
+        }
+    }
+
+    &.error {
+        .input-container {
+
+            border: 1px solid $red;
+
+            .inner {
+
+                input {
+                    color: white;
+                }
+
+                .icon-container {
+                    border-color: $red;
+                }
+            }
+
+            .input-label {
+                opacity: 1;
+                color: $red;
+            }
+        }
+    }
+}

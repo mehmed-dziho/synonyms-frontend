@@ -1,0 +1,35 @@
+@import "src/assets/vars";
+
+button.synonyms {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    text-align: center;
+    padding: 0.75rem 1.5625rem;
+    font-size: 0.875rem;
+    font-weight: 400;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all ease-in 175ms;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    user-select: none;
+    background: $accentColor;
+    color: white;
+
+    &:focus {
+        outline: none;
+    }
+
+    .spinner-container {
+        display: flex;
+        margin-left: 0.5rem;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: default;
+    }
+}
