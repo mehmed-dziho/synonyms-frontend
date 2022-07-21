@@ -89,11 +89,11 @@ function App() {
                     {loadingSynonyms ? (
                         <div>Loading...</div>
                     ) : (
-                        <div className="flex-col">
+                        <div className="flex-co mt-4 l">
                             {synonyms.length > 0 ? (
                                 <div className="flex-col">
-                                    <div className="text-xl mt-4 text-gray-color font-bold ">Synonyms:</div>
-                                    {synonyms.map(synonym => <WordListItem word={synonym}/>)}
+                                    <div className="text-xl mb-4 text-gray-color font-bold ">Synonyms:</div>
+                                    {synonyms.map(synonym => <WordListItem word={synonym} className='mb-2'/>)}
                                 </div>
                             ) : (
                                 <div className="text-gray-color">No synonyms found for selected word.</div>

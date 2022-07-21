@@ -1,3 +1,21 @@
-.word-list-item {
+@import "src/assets/vars";
 
+.word-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .edit-btn {
+
+        &:hover {
+            color: $accentColor;
+        }
+    }
+
+    .delete-btn {
+
+        &:hover {
+            color: $red;
+        }
+    }
 }

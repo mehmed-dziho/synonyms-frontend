@@ -35,4 +35,17 @@ export class WordsApi {
             url: url.toString()
         });
     }
+
+    static editWord(word: Word, newText: string) {
+
+        const url = new URL(`${API.words}/${word.text}`);
+
+        return API.apiCall<Word[]>({
+            url: url.toString(),
+            method: ApiMethod.PUT,
+            data: {
+                text: newText
+            }
+        });
+    }
 }
