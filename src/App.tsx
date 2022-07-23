@@ -38,7 +38,21 @@ function App() {
             });
     };
 
-    const onClickCreateSynonym = () => {
+    const onSuccessEditSelectedWord = (originalName: string, word: Word) => {
+        if (selectedWord) {
+            setSelectedWord({
+                text: word.text,
+                groupId: selectedWord.groupId
+            });
+        }
+    };
+
+    const onSuccessDeleteWord = () => {
+        setSelectedWord(null);
+    };
+
+
+    const handleCreateSynonym = () => {
         WordsApi.addWord(newSynonym, selectedWord?.groupId)
             .then(r => {
                 if (r) {
@@ -49,20 +63,42 @@ function App() {
             });
     };
 
+    const onSuccessEditSynonym = (originalName: string, word: Word) => {
+        const clone = [...synonyms];
+
+        const synonym = clone.find(s => s.text === originalName);
+
+        if (synonym) {
+            synonym.text = word.text;
+            setSynonyms(clone);
+        }
+    };
+
+    const onSuccessDeleteSynonym = (word: Word) => {
+        const clone = [...synonyms];
+
+        const idx = clone.findIndex(s => s.text === word.text);
+
+        if (idx !== -1) {
+            clone.splice(idx, 1);
+            setSynonyms(clone);
+        }
+    };
+
     useEffect(() => {
 
         // fetch synonyms for selected word
         if (selectedWord) {
+            setLoadingSynonyms(true);
             WordsApi.fetchSynonyms(selectedWord.text)
                 .then(r => {
                     if (r) {
                         setSynonyms(r);
                     }
-                });
+                })
+                .finally(() => setLoadingSynonyms(false));
         }
     }, [selectedWord]);
-
-    console.log(synonyms);
 
     return (
         <div className="App">
@@ -84,16 +120,30 @@ function App() {
                 onCreateOption={onClickCreateWord}
                 placeholder={"Search and select a word"}/>
             {selectedWord && (
-                <div className="flex-col mt-4">
-                    <span className="text-xl font-bold">{Utils.capitalize(selectedWord.text)}</span>
+                <div className="flex flex-col flex-1 mt-4">
+
+                    <WordListItem word={selectedWord}
+                                  onSuccessEdit={onSuccessEditSelectedWord}
+                                  onSuccessDelete={onSuccessDeleteWord}
+                                  className="selected-word"/>
+                    {/*<span className="text-xl font-bold">{Utils.capitalize(selectedWord.text)}</span>*/}
+
                     {loadingSynonyms ? (
                         <div>Loading...</div>
                     ) : (
-                        <div className="flex-co mt-4 l">
+                        <div className="flex flex-col flex-1 mt-4 l">
                             {synonyms.length > 0 ? (
-                                <div className="flex-col">
-                                    <div className="text-xl mb-4 text-gray-color font-bold ">Synonyms:</div>
-                                    {synonyms.map(synonym => <WordListItem word={synonym} className='mb-2'/>)}
+                                <div className="flex flex-col flex-1">
+                                    <div className="text-xl mb-4 text-gray-color synonyms-label">
+                                        Synonyms
+                                    </div>
+                                    <div className="basis-0 flex-grow overflow-y-auto">
+                                        {synonyms.map(synonym => <WordListItem word={synonym}
+                                                                               key={synonym.text}
+                                                                               onSuccessEdit={onSuccessEditSynonym}
+                                                                               onSuccessDelete={onSuccessDeleteSynonym}
+                                                                               className="mb-2"/>)}
+                                    </div>
                                 </div>
                             ) : (
                                 <div className="text-gray-color">No synonyms found for selected word.</div>
@@ -101,23 +151,33 @@ function App() {
 
                             <div className="mt-4">
                                 {addingSynonym ? (
-                                    <div className="flex items-center">
+                                    <div className="flex items-center justify-between">
                                         <InputField
                                             value={newSynonym}
+                                            autoFocus
+                                            onKeyDown={event => {
+                                                if (event.code === "Enter") {
+                                                    handleCreateSynonym();
+                                                } else if (event.code === "Escape") {
+                                                    setAddingSynonym(false);
+                                                }
+                                            }}
                                             placeholder={"New synonym..."}
                                             onChange={e => {
                                                 setNewSynonym(e.target.value);
                                             }}/>
-                                        <GIcon icon={"check_circle"}
-                                               size={30}
-                                               className="confirm-synonym-btn ml-2"
-                                               onClick={onClickCreateSynonym}
-                                        />
-                                        <GIcon icon={"cancel"}
-                                               size={30}
-                                               className="cancel-synonym-btn ml-1"
-                                               onClick={() => setAddingSynonym(false)}
-                                        />
+                                        <div>
+                                            <GIcon icon={"check_circle"}
+                                                   size={25}
+                                                   className="confirm-synonym-btn ml-2"
+                                                   onClick={handleCreateSynonym}
+                                            />
+                                            <GIcon icon={"cancel"}
+                                                   size={25}
+                                                   className="cancel-synonym-btn ml-1"
+                                                   onClick={() => setAddingSynonym(false)}
+                                            />
+                                        </div>
                                     </div>
                                 ) : (
                                     <Button onClick={() => setAddingSynonym(true)}>

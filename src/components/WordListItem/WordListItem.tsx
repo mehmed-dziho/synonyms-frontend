@@ -5,15 +5,16 @@ import GIcon from "../GIcon/GIcon";
 import { Utils } from "../../utils/utils";
 import classNames from "classnames";
 import InputField from "../Input/InputField";
-import { API } from "../../api/api";
 import { WordsApi } from "../../api/words";
 import useHover from "../../utils/hooks/useHover";
 
 interface WordListItemProps {
     word: Word;
+    onSuccessEdit?: (originalName: string, word: Word) => void;
+    onSuccessDelete?: (word: Word) => void;
 }
 
-function WordListItem({ word, className }: WithClassname<WordListItemProps>) {
+function WordListItem({ word, className, onSuccessEdit, onSuccessDelete }: WithClassname<WordListItemProps>) {
 
     const [editMode, setEditMode] = useState(false);
     const [text, setText] = useState("");
@@ -21,8 +22,20 @@ function WordListItem({ word, className }: WithClassname<WordListItemProps>) {
     const onEditWord = () => {
         WordsApi.editWord(word, text)
             .then(r => {
-                console.log(r);
-                // TODO, update synonyms array in App
+                if (onSuccessEdit && r) {
+                    onSuccessEdit(word.text, r);
+                    setEditMode(false);
+                    setText("");
+                }
+            });
+    };
+
+    const onDeleteWord = () => {
+        WordsApi.deleteWord(word)
+            .then(() => {
+                if (onSuccessDelete) {
+                    onSuccessDelete(word);
+                }
             });
     };
 
@@ -33,9 +46,17 @@ function WordListItem({ word, className }: WithClassname<WordListItemProps>) {
         <div className={classNames("word-list-item", className, isHovered && "is-hovered")} ref={ref}>
             {editMode ? (
                 <InputField value={text}
+                            autoFocus
+                            onKeyDown={event => {
+                                if (event.code === "Enter") {
+                                    onEditWord();
+                                } else if (event.code === "Escape") {
+                                    setEditMode(false);
+                                }
+                            }}
                             onChange={(e) => setText(e.target.value)}/>
             ) : (
-                <span className="text-lg">{Utils.capitalize(word.text)}</span>
+                <span className="text-lg word-text">{Utils.capitalize(word.text)}</span>
             )}
             <div className="flex">
                 {editMode ? (
@@ -60,7 +81,10 @@ function WordListItem({ word, className }: WithClassname<WordListItemProps>) {
                             setEditMode(true);
                             setText(Utils.capitalize(word.text));
                         }}/>
-                        <GIcon icon={"delete"} className="delete-btn" size={25}/>
+                        <GIcon icon={"delete"}
+                               className="delete-btn"
+                               onClick={onDeleteWord}
+                               size={25}/>
                     </div>
                 )}
 

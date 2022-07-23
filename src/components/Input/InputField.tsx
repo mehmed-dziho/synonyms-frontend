@@ -1,7 +1,7 @@
 import * as React from "react";
 import classNames from "classnames";
 import {
-    CSSProperties,
+    CSSProperties, HTMLProps,
     useCallback,
     useState,
 } from "react";
@@ -14,7 +14,7 @@ export enum InputType {
     Number = "number",
 }
 
-export interface InputProps {
+export interface InputProps extends HTMLProps<HTMLInputElement>{
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     label?: string;
     labelOutside?: boolean;
@@ -38,7 +38,8 @@ const InputField = React.forwardRef<HTMLInputElement, WithClassname<InputProps>>
                                                                                       style = {},
                                                                                       readonly = false,
                                                                                       className,
-                                                                                      error
+                                                                                      error,
+    ...props
                                                                                   }, ref) => {
     const [focused, setIsFocused] = useState(false);
     const toggleFocus = useCallback(() => setIsFocused(!focused), [focused]);
@@ -71,6 +72,7 @@ const InputField = React.forwardRef<HTMLInputElement, WithClassname<InputProps>>
 
                 <div className="inner">
                     <input
+                        {...props}
                         readOnly={readonly}
                         onInput={onInputChange}
                         ref={ref}

@@ -40,12 +40,22 @@ export class WordsApi {
 
         const url = new URL(`${API.words}/${word.text}`);
 
-        return API.apiCall<Word[]>({
+        return API.apiCall<Word>({
             url: url.toString(),
             method: ApiMethod.PUT,
             data: {
                 text: newText
             }
+        });
+    }
+
+    static deleteWord(word: Word) {
+
+        const url = new URL(`${API.words}/${word.text}`);
+
+        return API.apiCall({
+            url: url.toString(),
+            method: ApiMethod.DELETE
         });
     }
 }
