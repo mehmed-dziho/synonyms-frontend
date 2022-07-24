@@ -30,3 +30,21 @@ html, body, #root {
         //color: red;
     }
 }
+
+.custom-option {
+    transition: background 60ms;
+}
+
+.custom-option:hover {
+    //transition-delay: 60ms;
+    cursor: pointer;
+    background: #deebff;
+}
+
+.custom-option.custom-select__option--is-focused {
+    background: none;
+}
+
+.custom-option.custom-select__option--is-selected {
+    background: #2684FF;
+}

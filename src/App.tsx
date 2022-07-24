@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import AsyncCreatableSelect from "react-select/async-creatable";
 import { WordOption, Word, WordUtils } from "./types/types";
 import { debounce } from "lodash";
@@ -9,6 +9,7 @@ import Button from "./components/Button/Button";
 import InputField from "./components/Input/InputField";
 import GIcon from "./components/GIcon/GIcon";
 import { SwalUtils } from "./utils/swal_utils";
+import { components, OptionProps } from "react-select";
 
 function App() {
 
@@ -131,11 +132,27 @@ function App() {
         }
     }, [selectedWord]);
 
+    const CustomOptionComponent = ({ children, ...props }: OptionProps<WordOption, false>) => {
+        const { onMouseMove, onMouseOver, ...rest } = props.innerProps;
+        const newProps = Object.assign(props, { innerProps: rest });
+        return (
+            <components.Option
+                {...newProps}
+                className="custom-option"
+            >
+                {children}
+            </components.Option>
+        );
+    };
+
     return (
         <div className="App">
             <span className="text-2xl font-bold w-full text-center">Synonyms App</span>
             <AsyncCreatableSelect
                 className="mt-4"
+                components={{
+                    Option: CustomOptionComponent         // override to increase performance
+                }}
                 classNamePrefix="select-field"
                 value={null}
                 loadOptions={fetchWordsDebounced}
@@ -149,6 +166,7 @@ function App() {
                 }}
                 noOptionsMessage={() => "No words found."}
                 onCreateOption={onClickCreateWord}
+                filterOption={null}                             // performance boost on large sets
                 placeholder={"Search and select a word"}/>
             {selectedWord && (
                 <div className="flex flex-col flex-1 mt-4">
