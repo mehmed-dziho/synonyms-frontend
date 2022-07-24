@@ -62,8 +62,7 @@ export class API {
             .catch(async ex => {
                 if (ex.json) {
                     const err = await ex.json();
-
-                    SwalUtils.showErrorSwalToast(err?.message ?? err);
+                    SwalUtils.showErrorSwalToast(err?.message ?? err ?? "An error occurred.");
                 }
                 return null;
             });
