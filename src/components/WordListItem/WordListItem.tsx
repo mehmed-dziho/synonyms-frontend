@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { WithClassname, Word } from "../../types/types";
+import { WithClassname, Word, WordUtils } from "../../types/types";
 import "./word_list_item.scss";
 import GIcon from "../GIcon/GIcon";
 import { Utils } from "../../utils/utils";
@@ -7,6 +7,7 @@ import classNames from "classnames";
 import InputField from "../Input/InputField";
 import { WordsApi } from "../../api/words";
 import useHover from "../../utils/hooks/useHover";
+import { SwalUtils } from "../../utils/swal_utils";
 
 interface WordListItemProps {
     word: Word;
@@ -18,25 +19,47 @@ function WordListItem({ word, className, onSuccessEdit, onSuccessDelete }: WithC
 
     const [editMode, setEditMode] = useState(false);
     const [text, setText] = useState("");
+    const [async, setAsync] = useState(false);
 
     const onEditWord = () => {
-        WordsApi.editWord(word, text)
+
+        if (async) {
+            return;
+        }
+
+        const prepared = text.trim();
+
+        // validate
+        if (!WordUtils.isWordValid(prepared)) {
+            SwalUtils.showWarningSwalToast("Word can only contains letters.");
+            return;
+        }
+
+        setAsync(true);
+
+        WordsApi.editWord(word, prepared)
             .then(r => {
                 if (onSuccessEdit && r) {
                     onSuccessEdit(word.text, r);
                     setEditMode(false);
                     setText("");
                 }
-            });
+            }).finally(() => setAsync(false));
     };
 
     const onDeleteWord = () => {
+
+        if (async) {
+            return;
+        }
+
+        setAsync(true);
         WordsApi.deleteWord(word)
             .then(() => {
                 if (onSuccessDelete) {
                     onSuccessDelete(word);
                 }
-            });
+            }).finally(() => setAsync(false))
     };
 
     const ref = useRef(null);

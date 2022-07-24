@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import AsyncCreatableSelect from "react-select/async-creatable";
-import { WordOption, Word } from "./types/types";
+import { WordOption, Word, WordUtils } from "./types/types";
 import { debounce } from "lodash";
 import { WordsApi } from "./api/words";
 import { Utils } from "./utils/utils";
@@ -8,6 +8,7 @@ import WordListItem from "./components/WordListItem/WordListItem";
 import Button from "./components/Button/Button";
 import InputField from "./components/Input/InputField";
 import GIcon from "./components/GIcon/GIcon";
+import { SwalUtils } from "./utils/swal_utils";
 
 function App() {
 
@@ -16,6 +17,7 @@ function App() {
     const [loadingSynonyms, setLoadingSynonyms] = useState(false);
     const [addingSynonym, setAddingSynonym] = useState(false);
     const [newSynonym, setNewSynonym] = useState("");
+    const [submitAsync, setSubmitAsync] = useState(false);
 
     const fetchWords = (input: string, callback: (options: WordOption[]) => void) => {
         WordsApi.fetchWords(input).then(r => {
@@ -30,15 +32,30 @@ function App() {
     const fetchWordsDebounced = debounce(fetchWords, 300);
 
     const onClickCreateWord = (word: string) => {
-        WordsApi.addWord(word)
+
+        if (submitAsync) {
+            return;
+        }
+
+        const prepared = word.trim();
+
+        // validate
+        if (!WordUtils.isWordValid(prepared)) {
+            SwalUtils.showWarningSwalToast("Word can only contains letters.");
+            return;
+        }
+
+        setSubmitAsync(true);
+        WordsApi.addWord(prepared)
             .then(r => {
                 if (r) {
                     setSelectedWord(r);
                 }
-            });
+            }).finally(() => setSubmitAsync(false));
     };
 
     const onSuccessEditSelectedWord = (originalName: string, word: Word) => {
+
         if (selectedWord) {
             setSelectedWord({
                 text: word.text,
@@ -53,14 +70,28 @@ function App() {
 
 
     const handleCreateSynonym = () => {
-        WordsApi.addWord(newSynonym, selectedWord?.groupId)
+
+        if (submitAsync) {
+            return;
+        }
+
+        const prepared = newSynonym.trim();
+
+        // validate
+        if (!WordUtils.isWordValid(prepared)) {
+            SwalUtils.showWarningSwalToast("Synonym can only contains letters.");
+            return;
+        }
+
+        setSubmitAsync(true);
+        WordsApi.addWord(prepared, selectedWord?.groupId)
             .then(r => {
                 if (r) {
                     setSynonyms([...synonyms, r]);
                     setAddingSynonym(false);
                     setNewSynonym("");
                 }
-            });
+            }).finally(() => setSubmitAsync(false));
     };
 
     const onSuccessEditSynonym = (originalName: string, word: Word) => {

@@ -21,10 +21,12 @@ export interface DefaultApiCallParams {
     body?: ReadableStream<Uint8Array> | string | null,
 }
 
+const IS_DEV = process.env.NODE_ENV === "development";
+
 
 export class API {
 
-    static endpoint = process.env.REACT_APP_ENDPOINT ?? "http://localhost:4000";
+    static endpoint = IS_DEV ? "http://localhost:4000" : process.env.REACT_APP_ENDPOINT;
     static words = API.endpoint + "/words";
 
     static handleErrors(response: Response): Response {

@@ -8,4 +8,8 @@ export class Utils {
 
         return text[0].toUpperCase() + text.slice(1);
     }
+
+    static onlyLetters(str: string) {
+        return /^[a-zA-Z]+$/.test(str);
+    }
 }
